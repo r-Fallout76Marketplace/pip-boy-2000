@@ -60,7 +60,7 @@ const dynamicForm = Devvit.createForm(
           disabled: true,
         },
       ],
-      title: `r/Fallout76Marketplace Profile for ${data.name}`,
+      title: `r/Fallout76Marketplace Profile for ${data.reddit_username}`,
     };
   },
   async (_) => {}
