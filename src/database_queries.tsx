@@ -33,7 +33,11 @@ export async function getProfileInfo(username: string, apiKey: string): Promise<
   };
 
   try {
-    const response = await fetch(`https://pipboy2000api-1-a5119667.deta.app/users/${username}`);
+    const response = await fetch(`https://pipboy2000api-1-a5119667.deta.app/users/${username}`, {
+      headers: {
+        "X-Space-App-Key": apiKey,
+      },
+    });
 
     if (response.status === 404) {
       return defaultProfile;
