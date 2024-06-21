@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "pip-boy-2000",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "BSD-3-Clause",
   "type": "module",
   "dependencies": {

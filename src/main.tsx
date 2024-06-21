@@ -35,7 +35,7 @@ const dynamicForm = Devvit.createForm(
           name: "m76_karma",
           label: `r/Market76 Karma`,
           type: "string",
-          defaultValue: data.m76_karma,
+          defaultValue: `${data.m76_karma}`,
           disabled: true,
         },
         {
