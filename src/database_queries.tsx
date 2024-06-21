@@ -27,7 +27,7 @@ export function getGamertagForPlatform(profile: KarmaProfile, platform: Platform
 export async function getProfileInfo(username: string, apiKey: string): Promise<KarmaProfile> {
   const defaultProfile: KarmaProfile = {
     reddit_username: username,
-    karma: 10,
+    karma: 0,
     gamertags: [],
     m76_karma: 0,
   };
