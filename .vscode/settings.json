@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "gamertag",
-        "gamertags"
+        "gamertags",
+        "psnid",
+        "xuid"
     ],
     "prettier.printWidth": 160,
 }

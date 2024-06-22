@@ -1,5 +1,5 @@
 import { Devvit } from "@devvit/public-api";
-import { KarmaProfile, getProfileInfo, Platform, getGamertagForPlatform } from "./database_queries.js";
+import { KarmaProfile, getProfileInfo, Platform, getGamertagForPlatform, getGamertagIDForPlatform, updateProfileInfo } from "./database_queries.js";
 
 Devvit.configure({ redditAPI: true, http: true });
 
@@ -13,7 +13,7 @@ Devvit.addSettings([
   },
 ]);
 
-const dynamicForm = Devvit.createForm(
+const profileCard = Devvit.createForm(
   (data) => {
     return {
       fields: [
@@ -79,7 +79,110 @@ Devvit.addMenuItem({
 
     const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
     const formData = await getProfileInfo((await post).authorName, apiKey);
-    return ctx.ui.showForm(dynamicForm, formData);
+    return ctx.ui.showForm(profileCard, formData);
+  },
+});
+
+const updateGamertagForm = Devvit.createForm(
+  (data) => {
+    return {
+      fields: [
+        {
+          name: "username",
+          label: "USERNAME",
+          type: "string",
+          defaultValue: data.reddit_username,
+          disabled: true,
+        },
+        {
+          name: "fo76_karma",
+          label: `r/Fallout76Marketplace Karma`,
+          type: "string",
+          defaultValue: `${data.karma}`,
+        },
+        {
+          name: "m76_karma",
+          label: `r/Market76 Karma`,
+          type: "string",
+          defaultValue: `${data.m76_karma}`,
+        },
+        {
+          name: "xbox_gt",
+          label: `XBOX GamerTag`,
+          type: "string",
+          defaultValue: getGamertagForPlatform(data as KarmaProfile, Platform.XBOX),
+        },
+        {
+          name: "xuid",
+          label: `XBOX GamerTag ID`,
+          type: "string",
+          defaultValue: getGamertagIDForPlatform(data as KarmaProfile, Platform.PlayStation),
+        },
+        {
+          name: "ps_gt",
+          label: `PlayStation GamerTag`,
+          type: "string",
+          defaultValue: getGamertagForPlatform(data as KarmaProfile, Platform.PlayStation),
+        },
+        {
+          name: "psnid",
+          label: `PlayStation GamerTag ID`,
+          type: "string",
+          defaultValue: getGamertagIDForPlatform(data as KarmaProfile, Platform.PlayStation),
+        },
+        {
+          name: "pc_gt",
+          label: `PC GamerTag`,
+          type: "string",
+          defaultValue: getGamertagForPlatform(data as KarmaProfile, Platform.PC),
+        },
+      ],
+      title: `r/Fallout76Marketplace Profile for ${data.reddit_username}`,
+    };
+  },
+  async (event, ctx) => {
+    const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
+    const updatedProfile: KarmaProfile = {
+      reddit_username: event.values.username,
+      karma: parseInt(event.values.fo76_karma, 10),
+      m76_karma: parseInt(event.values.fo76_karma, 10),
+      gamertags: [
+        {
+          gamertag: event.values.xbox_gt,
+          gamertag_id: event.values.xuid,
+          platform: Platform.XBOX,
+        },
+        {
+          gamertag: event.values.ps_gt,
+          gamertag_id: event.values.psnid,
+          platform: Platform.PlayStation,
+        },
+        {
+          gamertag: event.values.fo76_karma,
+          gamertag_id: "0",
+          platform: Platform.PC,
+        },
+      ],
+    };
+    await updateProfileInfo(updatedProfile, apiKey);
+  }
+);
+
+Devvit.addMenuItem({
+  label: "Update Karma Profile",
+  location: ["post", "comment"],
+  forUserType: "moderator",
+  onPress: async (event, ctx) => {
+    let post;
+    if (event.targetId.startsWith("t1_")) {
+      post = ctx.reddit.getCommentById(event.targetId);
+    } else {
+      post = ctx.reddit.getPostById(event.targetId);
+    }
+
+    const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
+    const formData = await getProfileInfo((await post).authorName, apiKey);
+    return ctx.ui.showForm(updateGamertagForm, formData);
   },
 });
 
