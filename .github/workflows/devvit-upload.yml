@@ -1,5 +1,10 @@
-name: Push to Devvit
-on: push
+name: Publish to Devvit
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
 
 jobs:
   push-to-devvit:
@@ -10,10 +15,11 @@ jobs:
           persist-credentials: false
 
       - name: Devvit Upload Github Action
-        uses: isFakeAccount/devvit-upload-github-action@v0.0.7
+        uses: isFakeAccount/devvit-upload-github-action@v0.0.8
         with:
-            refresh_token: ${{ secrets.REFRESH_TOKEN }}
-      
+          refresh_token: ${{ secrets.REFRESH_TOKEN }}
+          upload_args: "--bump=minor"
+
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
