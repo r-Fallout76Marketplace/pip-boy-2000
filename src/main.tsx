@@ -116,7 +116,7 @@ const updateGamertagForm = Devvit.createForm(
           name: "xuid",
           label: `XBOX GamerTag ID`,
           type: "string",
-          defaultValue: getGamertagIDForPlatform(data as KarmaProfile, Platform.PlayStation),
+          defaultValue: getGamertagIDForPlatform(data as KarmaProfile, Platform.XBOX),
         },
         {
           name: "ps_gt",
