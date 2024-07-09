@@ -145,7 +145,7 @@ const updateGamertagForm = Devvit.createForm(
     const updatedProfile: KarmaProfile = {
       reddit_username: event.values.username,
       karma: parseInt(event.values.fo76_karma, 10),
-      m76_karma: parseInt(event.values.fo76_karma, 10),
+      m76_karma: parseInt(event.values.m76_karma, 10),
       gamertags: [
         {
           gamertag: event.values.xbox_gt,
@@ -158,7 +158,7 @@ const updateGamertagForm = Devvit.createForm(
           platform: Platform.PlayStation,
         },
         {
-          gamertag: event.values.fo76_karma,
+          gamertag: event.values.pc_gt,
           gamertag_id: "0",
           platform: Platform.PC,
         },
