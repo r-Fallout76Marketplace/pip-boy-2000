@@ -163,7 +163,7 @@ const updateGamertagForm = Devvit.createForm(
           gamertag_id: "0",
           platform: Platform.PC,
         },
-      ].filter((gamertag) => gamertag.gamertag !== undefined),
+      ].filter((gamertag) => Boolean(gamertag.gamertag)),
     };
 
     const user = await ctx.reddit.getUserByUsername(event.values.username);
