@@ -43,7 +43,6 @@ export async function isModerator(user: User, subreddit: Subreddit): Promise<boo
     }
     return false;
   } catch (error) {
-    console.error(error);
     return false;
   }
 }
