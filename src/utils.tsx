@@ -35,9 +35,15 @@ export async function setFlairBasedOnKarma(
 
 export async function isModerator(user: User, subreddit: Subreddit): Promise<boolean> {
   try {
-    const moderatorPermissions = await user.getModPermissionsForSubreddit(subreddit.name);
-    return Boolean(moderatorPermissions);
+    const modList = await subreddit.getModerators().all();
+    for (const moderator of modList) {
+      if (user.username === moderator.username) {
+        return true;
+      }
+    }
+    return false;
   } catch (error) {
+    console.error(error);
     return false;
   }
 }
