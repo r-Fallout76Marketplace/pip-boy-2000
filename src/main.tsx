@@ -1,5 +1,6 @@
 import { Devvit } from "@devvit/public-api";
 import { KarmaProfile, getProfileInfo, Platform, getGamertagForPlatform, getGamertagIDForPlatform, updateProfileInfo } from "./database_queries.js";
+import { isModerator, setFlairBasedOnKarma } from "./utils.js";
 
 Devvit.configure({ redditAPI: true, http: true });
 
@@ -82,29 +83,6 @@ Devvit.addMenuItem({
     return ctx.ui.showForm(profileCard, formData);
   },
 });
-
-const ABOVE_HUNDRED_FLAIR = "0467e0de-4a4d-11eb-9453-0e4e6fcf2865";
-const FIFTY_TO_HUNDRED_FLAIR = "2624bc6a-4a4d-11eb-8b7c-0e6968d78889";
-const ZERO_TO_FIFTY_FLAIR = "3c680234-4a4d-11eb-8124-0edd2b620987";
-
-async function setFlairBasedOnKarma(username: string, subredditName: string, combinedKarma: number, ctx: Devvit.Context, flairText: string) {
-  let flairTemplateId: string;
-
-  if (combinedKarma < 49) {
-    flairTemplateId = ZERO_TO_FIFTY_FLAIR;
-  } else if (combinedKarma < 99) {
-    flairTemplateId = FIFTY_TO_HUNDRED_FLAIR;
-  } else {
-    flairTemplateId = ABOVE_HUNDRED_FLAIR;
-  }
-
-  await ctx.reddit.setUserFlair({
-    subredditName: subredditName,
-    username: username,
-    flairTemplateId: flairTemplateId,
-    text: flairText,
-  });
-}
 
 const updateGamertagForm = Devvit.createForm(
   (data) => {
@@ -192,17 +170,12 @@ const updateGamertagForm = Devvit.createForm(
     const subreddit = await ctx.reddit.getCurrentSubreddit();
     const userFlair = await user.getUserFlairBySubreddit(subreddit.name);
     const combinedKarma = parseInt(event.values.fo76_karma, 10) + parseInt(event.values.m76_karma, 10);
+    const isMod = await isModerator(event.values.username, subreddit);
+
     const platformsEmojis = updatedProfile.gamertags.map((gamertag) => `:${gamertag.platform.toLowerCase()}:`);
-
-    if (userFlair === undefined) {
-      await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx, `${platformsEmojis.join(" ")} Karma: ${combinedKarma}`);
-    } else {
-      const flairText = userFlair.flairText;
-      const flairLabel = flairText?.includes("Courier") ? "Verified Courier" : "Karma";
-      const newFlair = `${platformsEmojis.join(" ")} ${flairLabel}: ${combinedKarma}`;
-
-      await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx, newFlair);
-    }
+    const flairLabel = userFlair === undefined ? "Karma" : userFlair.flairText?.includes("Courier") ? "Verified Courier" : "Karma";
+    const newFlair = `${platformsEmojis.join(" ")} ${flairLabel}: ${combinedKarma}`;
+    await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx, newFlair, isMod || flairLabel === "Verified Courier");
 
     await updateProfileInfo(updatedProfile, apiKey);
   }
