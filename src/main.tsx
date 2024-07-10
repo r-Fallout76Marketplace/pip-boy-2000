@@ -162,7 +162,7 @@ const updateGamertagForm = Devvit.createForm(
           gamertag_id: "0",
           platform: Platform.PC,
         },
-      ],
+      ].filter((gamertag) => gamertag.gamertag !== undefined),
     };
     await updateProfileInfo(updatedProfile, apiKey);
   }
