@@ -170,7 +170,7 @@ const updateGamertagForm = Devvit.createForm(
     const subreddit = await ctx.reddit.getCurrentSubreddit();
     const userFlair = await user.getUserFlairBySubreddit(subreddit.name);
     const combinedKarma = parseInt(event.values.fo76_karma, 10) + parseInt(event.values.m76_karma, 10);
-    const isMod = await isModerator(event.values.username, subreddit);
+    const isMod = await isModerator(user, subreddit);
 
     const platformsEmojis = updatedProfile.gamertags.map((gamertag) => `:${gamertag.platform.toLowerCase()}:`);
     const flairLabel = userFlair === undefined ? "Karma" : userFlair.flairText?.includes("Courier") ? "Verified Courier" : "Karma";

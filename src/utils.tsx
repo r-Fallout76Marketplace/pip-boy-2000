@@ -1,4 +1,4 @@
-import { Devvit, Subreddit } from "@devvit/public-api";
+import { Devvit, Subreddit, User } from "@devvit/public-api";
 
 const ABOVE_HUNDRED_FLAIR = "0467e0de-4a4d-11eb-9453-0e4e6fcf2865";
 const FIFTY_TO_HUNDRED_FLAIR = "2624bc6a-4a4d-11eb-8b7c-0e6968d78889";
@@ -33,12 +33,11 @@ export async function setFlairBasedOnKarma(
   });
 }
 
-export async function isModerator(username: String, subreddit: Subreddit): Promise<boolean> {
-  const moderators = await subreddit.getModerators().all();
-  moderators.forEach((moderator) => {
-    if (username === moderator.username) {
-      return true;
-    }
-  });
-  return false;
+export async function isModerator(user: User, subreddit: Subreddit): Promise<boolean> {
+  try {
+    const moderatorPermissions = await user.getModPermissionsForSubreddit(subreddit.name);
+    return Boolean(moderatorPermissions);
+  } catch (error) {
+    return false;
+  }
 }
