@@ -83,6 +83,29 @@ Devvit.addMenuItem({
   },
 });
 
+const ABOVE_HUNDRED_FLAIR = "0467e0de-4a4d-11eb-9453-0e4e6fcf2865";
+const FIFTY_TO_HUNDRED_FLAIR = "2624bc6a-4a4d-11eb-8b7c-0e6968d78889";
+const ZERO_TO_FIFTY_FLAIR = "3c680234-4a4d-11eb-8124-0edd2b620987";
+
+async function setFlairBasedOnKarma(username: string, subredditName: string, combinedKarma: number, ctx: Devvit.Context, flairText?: string) {
+  let flairTemplateId: string;
+
+  if (combinedKarma < 49) {
+    flairTemplateId = ZERO_TO_FIFTY_FLAIR;
+  } else if (combinedKarma < 99) {
+    flairTemplateId = FIFTY_TO_HUNDRED_FLAIR;
+  } else {
+    flairTemplateId = ABOVE_HUNDRED_FLAIR;
+  }
+
+  await ctx.reddit.setUserFlair({
+    subredditName: subredditName,
+    username: username,
+    flairTemplateId: flairTemplateId,
+    text: flairText ?? `Karma: ${combinedKarma}`,
+  });
+}
+
 const updateGamertagForm = Devvit.createForm(
   (data) => {
     return {
@@ -164,6 +187,23 @@ const updateGamertagForm = Devvit.createForm(
         },
       ].filter((gamertag) => gamertag.gamertag !== undefined),
     };
+
+    const user = await ctx.reddit.getUserByUsername(event.values.username);
+    const subreddit = await ctx.reddit.getCurrentSubreddit();
+    const userFlair = await user.getUserFlairBySubreddit(subreddit.name);
+    const combinedKarma = parseInt(event.values.fo76_karma, 10) + parseInt(event.values.m76_karma, 10);
+
+    if (userFlair === undefined) {
+      await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx);
+    } else {
+      const flairText = userFlair.flairText;
+      let splitFlair = (flairText ?? "Karma: 0").split(" ");
+      splitFlair[splitFlair.length - 1] = combinedKarma.toString();
+      const newFlair = splitFlair.join(" ");
+
+      await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx, newFlair);
+    }
+
     await updateProfileInfo(updatedProfile, apiKey);
   }
 );
