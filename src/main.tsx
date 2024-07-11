@@ -178,7 +178,12 @@ const updateGamertagForm = Devvit.createForm(
     await setFlairBasedOnKarma(event.values.username, subreddit.name, combinedKarma, ctx, newFlair, isMod || flairLabel === "Verified Courier");
 
     console.log(updatedProfile);
-    await updateProfileInfo(updatedProfile, apiKey);
+    try {
+      await updateProfileInfo(updatedProfile, apiKey);
+      return ctx.ui.showToast(`Profile Updated Successfully`);
+    } catch (error) {
+      return ctx.ui.showToast(`Error Updating Profile: ${error}`);
+    }
   }
 );
 
