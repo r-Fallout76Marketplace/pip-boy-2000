@@ -62,7 +62,36 @@ export async function updateProfileInfo(profile: KarmaProfile, apiKey: string): 
   }
 }
 
-export async function getProfileInfo(username: string, apiKey: string): Promise<KarmaProfile> {
+export async function insertNewProfile(profile: KarmaProfile, apiKey: string): Promise<void> {
+  const url = "https://pipboy2000api-1-a5119667.deta.app/users/profile";
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-Space-App-Key": apiKey,
+  };
+
+  const requestOptions: RequestInit = {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(profile),
+  };
+
+  try {
+    const response = await fetch(url, requestOptions);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! ${response.text}`);
+    }
+
+    const responseData = await response.json();
+    console.log("Profile insertion successful:", responseData);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error;
+  }
+}
+
+export async function getProfileInfo(username: string, apiKey: string): Promise<[KarmaProfile, boolean]> {
   const defaultProfile: KarmaProfile = {
     reddit_username: username,
     karma: 0,
@@ -77,17 +106,16 @@ export async function getProfileInfo(username: string, apiKey: string): Promise<
       },
     });
 
-    if (response.status === 404) {
-      return defaultProfile;
-    }
+    if (response.status === 404) return [defaultProfile, true];
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    return await response.json();
+    const profile: KarmaProfile = await response.json();
+    return [profile, false];
   } catch (error) {
     console.error("Error fetching profile:", error);
-    return defaultProfile;
+    return [defaultProfile, false];
   }
 }

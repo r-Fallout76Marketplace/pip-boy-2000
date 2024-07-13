@@ -1,5 +1,13 @@
 import { Devvit } from "@devvit/public-api";
-import { KarmaProfile, getProfileInfo, Platform, getGamertagForPlatform, getGamertagIDForPlatform, updateProfileInfo } from "./database_queries.js";
+import {
+  KarmaProfile,
+  getProfileInfo,
+  Platform,
+  getGamertagForPlatform,
+  getGamertagIDForPlatform,
+  updateProfileInfo,
+  insertNewProfile,
+} from "./database_queries.js";
 import { isModerator, setFlairBasedOnKarma } from "./utils.js";
 
 Devvit.configure({ redditAPI: true, http: true });
@@ -79,8 +87,8 @@ Devvit.addMenuItem({
     }
 
     const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
-    const formData = await getProfileInfo((await post).authorName, apiKey);
-    return ctx.ui.showForm(profileCard, formData);
+    const [profile, _] = await getProfileInfo((await post).authorName, apiKey);
+    return ctx.ui.showForm(profileCard, profile);
   },
 });
 
@@ -200,8 +208,16 @@ Devvit.addMenuItem({
     }
 
     const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
-    const formData = await getProfileInfo((await post).authorName, apiKey);
-    return ctx.ui.showForm(updateGamertagForm, formData);
+    const [profile, isDefault] = await getProfileInfo((await post).authorName, apiKey);
+
+    if (isDefault) {
+      try {
+        await insertNewProfile(profile, apiKey);
+      } catch (error) {
+        return ctx.ui.showToast("Couldn't insert new profile in database.");
+      }
+    }
+    return ctx.ui.showForm(updateGamertagForm, profile);
   },
 });
 
