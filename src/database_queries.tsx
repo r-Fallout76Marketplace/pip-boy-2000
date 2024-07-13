@@ -106,16 +106,14 @@ export async function getProfileInfo(username: string, apiKey: string): Promise<
       },
     });
 
-    if (response.status === 404) return [defaultProfile, true];
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
     const profile: KarmaProfile = await response.json();
     return [profile, false];
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    return [defaultProfile, false];
+    if (error instanceof Response && error.status === 404) {
+      return [defaultProfile, true];
+    } else {
+      console.error("Error fetching profile:", error);
+      return [defaultProfile, true];
+    }
   }
 }
