@@ -1,0 +1,10 @@
+{
+  "name": "pip-boy-2000-app",
+  "blocks": {
+    "entry": "src/main.tsx",
+    "triggers": []
+  },
+  "dev": {
+    "subreddit": "pip_boy_2000_app_dev"
+  }
+}

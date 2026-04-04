@@ -34,11 +34,11 @@ export function getGamertagIDForPlatform(profile: KarmaProfile, platform: Platfo
 }
 
 export async function updateProfileInfo(profile: KarmaProfile, apiKey: string): Promise<void> {
-  const url = "https://pipboy2000api-1-a5119667.deta.app/users/profile";
+  const url = "https://muddy-winnifred-fallout76marketplace-801996be.koyeb.app/api/users/profile";
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
-    "X-Space-App-Key": apiKey,
+    "X-API-Key": apiKey,
   };
 
   const requestOptions: RequestInit = {
@@ -63,11 +63,11 @@ export async function updateProfileInfo(profile: KarmaProfile, apiKey: string): 
 }
 
 export async function insertNewProfile(profile: KarmaProfile, apiKey: string): Promise<void> {
-  const url = "https://pipboy2000api-1-a5119667.deta.app/users/profile";
+  const url = "https://muddy-winnifred-fallout76marketplace-801996be.koyeb.app/api/users/profile";
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
-    "X-Space-App-Key": apiKey,
+    "X-API-Key": apiKey,
   };
 
   const requestOptions: RequestInit = {
@@ -100,9 +100,9 @@ export async function getProfileInfo(username: string, apiKey: string): Promise<
   };
 
   try {
-    const response = await fetch(`https://pipboy2000api-1-a5119667.deta.app/users/${username}`, {
+    const response = await fetch(`https://muddy-winnifred-fallout76marketplace-801996be.koyeb.app/api/users/${username}`, {
       headers: {
-        "X-Space-App-Key": apiKey,
+        "X-API-Key": apiKey,
       },
     });
 

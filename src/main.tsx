@@ -14,7 +14,7 @@ Devvit.configure({ redditAPI: true, http: true });
 
 Devvit.addSettings([
   {
-    name: "X-Space-App-Key",
+    name: "X-API-Key",
     label: "Fallout76MarketplaceKarmaAPI App Key",
     type: "string",
     isSecret: true,
@@ -86,7 +86,7 @@ Devvit.addMenuItem({
       post = ctx.reddit.getPostById(event.targetId);
     }
 
-    const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
+    const apiKey = (await ctx.settings.get("X-API-Key")) as string;
     const [profile, _] = await getProfileInfo((await post).authorName, apiKey);
     return ctx.ui.showForm(profileCard, profile);
   },
@@ -150,7 +150,7 @@ const updateGamertagForm = Devvit.createForm(
     };
   },
   async (event, ctx) => {
-    const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
+    const apiKey = (await ctx.settings.get("X-API-Key")) as string;
     const updatedProfile: KarmaProfile = {
       reddit_username: event.values.username,
       karma: parseInt(event.values.fo76_karma, 10),
@@ -207,7 +207,7 @@ Devvit.addMenuItem({
       post = ctx.reddit.getPostById(event.targetId);
     }
 
-    const apiKey = (await ctx.settings.get("X-Space-App-Key")) as string;
+    const apiKey = (await ctx.settings.get("X-API-Key")) as string;
     const [profile, isDefault] = await getProfileInfo((await post).authorName, apiKey);
 
     if (isDefault) {
